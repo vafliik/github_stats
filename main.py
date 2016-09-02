@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone, timedelta
 import dateutil.parser
 
-TOKEN = '97fe76db190e3e7be8d517466405e3f6241b9b2f'
+TOKEN = ''
 
 def duration(start_time, end_time):
     start_time = dateutil.parser.parse(start_time)
