@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone, timedelta
 import dateutil.parser
 
-TOKEN = ''
+TOKEN = '97fe76db190e3e7be8d517466405e3f6241b9b2f'
 
 def duration(start_time, end_time):
     start_time = dateutil.parser.parse(start_time)
@@ -26,7 +26,7 @@ labels_pr_added = {}
 labels_pr_removed = {}
 
 #maybe straight to /issues ? We do not use them for anything else than PRs
-r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=all&per_page=20', headers={'Authorization': 'token {}'.format(TOKEN)})
+r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=all&per_page=100', headers={'Authorization': 'token {}'.format(TOKEN)})
 
 if(r.ok):
     repoItem = json.loads(r.text)
