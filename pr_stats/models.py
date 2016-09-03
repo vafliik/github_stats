@@ -13,16 +13,19 @@ class PullRequest(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     closed_at = models.DateTimeField(blank=True, null=True)
 
-    def duration(self):
+    def time_open(self):
         if self.closed_at is None:
             self.closed_at = datetime.now(timezone.utc)
 
         return self.closed_at - self.created_at
 
+    def time_open_sec(self):
+        return self.time_open().total_seconds()
+
     def alert(self):
-        if self.duration() > timedelta(days=1):
+        if self.time_open() > timedelta(days=1):
             return 'danger'
-        if self.duration() > timedelta(hours=5):
+        if self.time_open() > timedelta(hours=5):
             return 'warning'
         else:
             return 'success'
