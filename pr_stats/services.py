@@ -6,8 +6,9 @@ from datetime import datetime, timezone, timedelta
 
 TOKEN = os.environ['GITHUB_TOKEN']
 
-def get_pulls():
-    r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=closed&per_page=5', headers={'Authorization': 'token {}'.format(TOKEN)})
+def get_pulls(state=all, per_page=10):
+    params = {'state': state, 'per_page': per_page}
+    r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls', params=params, headers={'Authorization': 'token {}'.format(TOKEN)})
     pull_requests = json.loads(r.text)
     return pull_requests
 

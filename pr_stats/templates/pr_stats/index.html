@@ -1,11 +1,33 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
 <h1>List of PRs</h1>
 
 {% if pr_list %}
-<ul>
-    {% for pull in pr_list %}
-    <li><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></li>
-    {% endfor %}
-</ul>
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>State</th>
+            <th>Duration</th>
+            <th>Links</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for pull in pr_list %}
+        <tr class="{{pull.alert}}">
+            <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.number }}</a></td>
+            <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></td>
+            <td>{{ pull.state }}</td>
+            <td>{{ pull.duration }}</td>
+            <td>GitHub</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+
+</table>
 {% else %}
 <p>No polls are available.</p>
 {% endif %}

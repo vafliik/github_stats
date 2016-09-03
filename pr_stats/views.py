@@ -36,7 +36,7 @@ def pulls(request):
     PullRequest.objects.all().delete()
     Event.objects.all().delete()
 
-    data = services.get_pulls()
+    data = services.get_pulls(state='closed', per_page=20)
     for pull in data:
         pr = PullRequest()
         pr.number = pull['number']
