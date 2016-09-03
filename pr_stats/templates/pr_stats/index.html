@@ -3,7 +3,7 @@
 {% if pr_list %}
 <ul>
     {% for pull in pr_list %}
-    <li>{{ pull.title }}</li>
+    <li><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></li>
     {% endfor %}
 </ul>
 {% else %}

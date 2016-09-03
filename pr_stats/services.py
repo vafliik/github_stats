@@ -6,7 +6,7 @@ import requests
 TOKEN = os.environ['GITHUB_TOKEN']
 
 def get_pulls():
-    r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=all&per_page=20', headers={'Authorization': 'token {}'.format(TOKEN)})
+    r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=all&per_page=5', headers={'Authorization': 'token {}'.format(TOKEN)})
     pull_requests = json.loads(r.text)
     return pull_requests
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 
 from pr_stats import services
@@ -11,6 +11,25 @@ def index(request):
         'pr_list': pr_list,
     }
     return render(request, 'pr_stats/index.html', context)
+
+def detail(request, pr_number):
+    pr = get_object_or_404(PullRequest, pk=pr_number)
+    events = pr.event_set.all()
+
+    if not events:
+        event_data = services.get_events(pr.number)
+
+        for event in event_data:
+            e = Event(pull_request = pr)
+            e.id = event['id']
+            e.event = event['event']
+            e.label = event['label']['name'] if 'label' in event.keys() else None
+            e.save()
+
+        events = pr.event_set.all()
+
+    context = {'pr': pr, 'events': events}
+    return render(request, 'pr_stats/detail.html', context)
 
 def pulls(request):
     PullRequest.objects.all().delete()
@@ -25,13 +44,13 @@ def pulls(request):
         pr.body = pull['body']
         pr.save()
 
-        event_data = services.get_events(pr.number)
-
-        for event in event_data:
-            e = Event(pull_request = pr)
-            e.id = event['id']
-            e.event = event['event']
-            e.label = event['label']['name'] if 'label' in event.keys() else None
-            e.save()
+        # event_data = services.get_events(pr.number)
+        #
+        # for event in event_data:
+        #     e = Event(pull_request = pr)
+        #     e.id = event['id']
+        #     e.event = event['event']
+        #     e.label = event['label']['name'] if 'label' in event.keys() else None
+        #     e.save()
 
     return redirect('index')
