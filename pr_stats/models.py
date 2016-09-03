@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+import time
 
 from django.db import models
 
@@ -22,6 +23,12 @@ class PullRequest(models.Model):
 
     def time_open_sec(self):
         return self.time_open().total_seconds()
+
+    def created_at_js(self):
+        return int(time.mktime(self.created_at.timetuple())) * 1000
+
+    def closed_at_js(self):
+        return int(time.mktime(self.closed_at.timetuple())) * 1000
 
     def alert(self):
         if self.time_open() > timedelta(days=1):

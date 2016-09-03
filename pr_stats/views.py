@@ -36,11 +36,11 @@ def detail(request, pr_number):
     return render(request, 'pr_stats/detail.html', context)
 
 def statistics(request):
-    # fastest_pr = PullRequest.objects.annotate(min_duration=Min('closed_after_sec')).order_by('min_duration').first()
-    fastest_pr = PullRequest.objects.filter(state='closed').order_by('closed_after_sec')[:1]
-    slowest_pr = PullRequest.objects.all().order_by('-closed_after_sec')[:1]
-    average_time = PullRequest.objects.all().aggregate(Avg('closed_after_sec'))['closed_after_sec__avg']
-    median_time = median_value(PullRequest.objects.all(), 'closed_after_sec')
+    pulls = PullRequest.objects.filter(state='closed')
+    fastest_pr = pulls.order_by('closed_after_sec')[:1]
+    slowest_pr = pulls.order_by('-closed_after_sec')[:1]
+    average_time = pulls.aggregate(Avg('closed_after_sec'))['closed_after_sec__avg']
+    median_time = median_value(pulls, 'closed_after_sec')
     context = {
         'fastest_pr': fastest_pr,
         'slowest_pr': slowest_pr,
