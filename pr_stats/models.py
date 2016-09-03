@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from django.db import models
 
 from pr_stats import services
@@ -8,6 +10,14 @@ class PullRequest(models.Model):
     title = models.CharField(max_length=200)
     state = models.CharField(max_length=30)
     body = models.TextField(default='')
+    created_at = models.DateTimeField(blank=True, null=True)
+    closed_at = models.DateTimeField(blank=True, null=True)
+
+    def duration(self):
+        if self.closed_at is None:
+            self.closed_at = datetime.now(timezone.utc)
+
+        return self.closed_at - self.created_at
 
     def __str__(self):
         return self.title

@@ -1,3 +1,4 @@
+import dateutil.parser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 
@@ -42,6 +43,11 @@ def pulls(request):
         pr.title = pull['title']
         pr.state = pull['state']
         pr.body = pull['body']
+        pr.created_at = dateutil.parser.parse(pull['created_at'])
+
+        if pull['closed_at'] is not None:
+            pr.closed_at = dateutil.parser.parse(pull['closed_at'])
+
         pr.save()
 
         # event_data = services.get_events(pr.number)
@@ -53,4 +59,4 @@ def pulls(request):
         #     e.label = event['label']['name'] if 'label' in event.keys() else None
         #     e.save()
 
-    return redirect('index')
+    return redirect('pr_stats:index')
