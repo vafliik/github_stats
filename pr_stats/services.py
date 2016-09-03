@@ -17,9 +17,10 @@ def get_events(pr_number):
     events = json.loads(r.text)
     return events
 
-def duration(start_time, end_time):
-
-    if end_time is None:
-        end_time = datetime.now(timezone.utc)
-
-    return end_time - start_time
+def median_value(queryset, term):
+    count = queryset.count()
+    values = queryset.values_list(term, flat=True).order_by(term)
+    if count % 2 == 1:
+        return values[int(round(count/2))]
+    else:
+        return sum(values[count/2-1:count/2+1])/2.0

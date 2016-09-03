@@ -12,6 +12,7 @@ class PullRequest(models.Model):
     body = models.TextField(default='')
     created_at = models.DateTimeField(blank=True, null=True)
     closed_at = models.DateTimeField(blank=True, null=True)
+    closed_after_sec = models.IntegerField(blank=True, null=True)
 
     def time_open(self):
         if self.closed_at is None:

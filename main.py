@@ -30,7 +30,7 @@ labels_pr_added = {}
 labels_pr_removed = {}
 
 #maybe straight to /issues ? We do not use them for anything else than PRs
-r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=open&per_page=21', headers={'Authorization': 'token {}'.format(TOKEN)})
+r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=closed&per_page=20', headers={'Authorization': 'token {}'.format(TOKEN)})
 
 if(r.ok):
     repoItem = json.loads(r.text)
