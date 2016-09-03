@@ -1,0 +1,11 @@
+<h1>List of PRs</h1>
+
+{% if pr_list %}
+<ul>
+    {% for pull in pr_list %}
+    <li>{{ pull.title }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No polls are available.</p>
+{% endif %}

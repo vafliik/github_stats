@@ -1,10 +1,13 @@
+import os
+from statistics import median
+
 import requests
 import json
 
 from datetime import datetime, timezone, timedelta
 import dateutil.parser
 
-TOKEN = ''
+TOKEN = os.environ['GITHUB_TOKEN']
 
 def duration(start_time, end_time):
     start_time = dateutil.parser.parse(start_time)
@@ -20,13 +23,14 @@ def duration(start_time, end_time):
 number_pr = 0
 total_pr_time = timedelta(0)
 fastest_pr = 0, None, timedelta.max
-slowest_pr = 0, None, timedelta(0)
+slowest_pr = 0, None, timedelta.min
+pr_duration_sec = []
 labels_duration = {}
 labels_pr_added = {}
 labels_pr_removed = {}
 
 #maybe straight to /issues ? We do not use them for anything else than PRs
-r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=all&per_page=100', headers={'Authorization': 'token {}'.format(TOKEN)})
+r = requests.get('https://api.github.com/repos/salsita/circlesorg/pulls?state=all&per_page=4', headers={'Authorization': 'token {}'.format(TOKEN)})
 
 if(r.ok):
     repoItem = json.loads(r.text)
@@ -36,6 +40,8 @@ if(r.ok):
         print('{:-^50}'.format('Pull Request ' + str(pr['number'])))
         print(pr['title'])
         pr_duration = duration(pr['created_at'], pr['closed_at'])
+
+        pr_duration_sec.append(pr_duration.total_seconds())
 
         if pr_duration > slowest_pr[2]:
             slowest_pr = pr['number'], pr['title'], pr_duration
@@ -77,8 +83,14 @@ if(r.ok):
 
 print('{:*^60}'.format('Stats'))
 print('Average time of PR open: {}\n'.format(total_pr_time / number_pr))
+print('Median time of PR open: {}\n'.format(timedelta(seconds=median(pr_duration_sec))))
 print('Slowest PR: {}, {} (Took: {})'.format(slowest_pr[0], slowest_pr[1], slowest_pr[2]))
-print('Fastest PR: {}, {} (Took: {})'.format(fastest_pr[0], fastest_pr[1], fastest_pr[2]))
+
+if fastest_pr[1] is not None:
+    print('Fastest PR: {}, {} (Took: {})'.format(fastest_pr[0], fastest_pr[1], fastest_pr[2]))
+else:
+    print('Fastest PR: None, all selected are still open')
+
 
 print('{:.^60}'.format('Labels usage'))
 for label in labels_duration.keys():
