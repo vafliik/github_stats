@@ -1,6 +1,43 @@
-<h1>Stats</h1>
+{% extends "base.html" %}
+{% block content %}
 
-{{ fastest_pr }}
-{{ slowest_pr }}
-{{ average_time }}
-{{ median_time }}
+<h1>{% block title %}Stats{% endblock %}</h1>
+
+<b>Stats based on data from {{ pulls.count }} PR's</b>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Statistics</th>
+        <th>Value</th>
+        <th>PR</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr class="">
+        <td>Fastest PR (shortest time opened)</td>
+        <td>{{ fastest_pr.time_open }}</td>
+        <td><a href="{% url 'pr_stats:detail' fastest_pr.number %}">{{ fastest_pr.title }}</a></td>
+    </tr>
+    <tr class="">
+        <td>Slowest PR (longest time opened)</td>
+        <td>{{ slowest_pr.time_open }}</td>
+        <td><a href="{% url 'pr_stats:detail' slowest_pr.number %}">{{ slowest_pr.title }}</a></td>
+    </tr>
+    <tr class="">
+        <td>Average time</td>
+        <td>{{ average_time }}</td>
+        <td>N/A</td>
+    </tr>
+    <tr class="">
+        <td>Median time</td>
+        <td>{{ median_time }}</td>
+        <td>N/A</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
+
+{% endblock %}

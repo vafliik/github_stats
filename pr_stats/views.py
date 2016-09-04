@@ -40,14 +40,17 @@ def detail(request, pr_number):
 
 
 def statistics(request):
+    state = request.GET.get('state', None)
     pulls = PullRequest.objects.filter(state='closed')
     fastest_pr = pulls.order_by('closed_after_sec')[:1]
     slowest_pr = pulls.order_by('-closed_after_sec')[:1]
     average_time = pulls.aggregate(Avg('closed_after_sec'))['closed_after_sec__avg']
     median_time = median_value(pulls, 'closed_after_sec')
     context = {
-        'fastest_pr': fastest_pr,
-        'slowest_pr': slowest_pr,
+        'argument': state,
+        'pulls': pulls,
+        'fastest_pr': fastest_pr[0],
+        'slowest_pr': slowest_pr[0],
         'average_time': timedelta(seconds=average_time),
         'median_time': timedelta(seconds=median_time)
     }
