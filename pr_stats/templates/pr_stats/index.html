@@ -12,6 +12,7 @@
         <tr>
             <th>#</th>
             <th>Title</th>
+            <th>User</th>
             <th>State</th>
             <th>Duration</th>
             <th>Links</th>
@@ -23,9 +24,10 @@
         <tr class="{{pull.alert}}">
             <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.number }}</a></td>
             <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></td>
+            <td><img src="{{ pull.user.avatar_url }}" style="width:24px;height:24px;"></td>
             <td>{{ pull.state }}</td>
             <td data-order="{{ pull.time_open_sec }}">{{ pull.time_open }}</td>
-            <td>GitHub</td>
+            <td><a href="{{pull.html_url}}" target="_blank">GitHub</a></td>
         </tr>
         {% endfor %}
     </tbody>

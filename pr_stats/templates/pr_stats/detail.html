@@ -1,6 +1,7 @@
 <h1>{{ pr.title }}</h1>
+{{pr.created_at}}
 <ul>
     {% for event in events %}
-    <li>{{ event.event }}</li>
+    <li><img src="{{ event.actor.avatar_url }}" style="width:24px;height:24px;">{{ event.event }} - {{ event.time_since_pr }}</li>
     {% endfor %}
 </ul>

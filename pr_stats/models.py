@@ -3,17 +3,25 @@ import time
 
 from django.db import models
 
-from pr_stats import services
+class User(models.Model):
+    id = models.IntegerField(primary_key=True)
+    login = models.CharField(max_length=30)
+    avatar_url = models.URLField(null=True)
+    url = models.URLField(null=True)
 
+    def __str__(self):
+        return self.login
 
 class PullRequest(models.Model):
     number = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     state = models.CharField(max_length=30)
     body = models.TextField(default='')
     created_at = models.DateTimeField(blank=True, null=True)
     closed_at = models.DateTimeField(blank=True, null=True)
     closed_after_sec = models.IntegerField(blank=True, null=True)
+    html_url = models.URLField(null=True)
 
     def time_open(self):
         if self.closed_at is None:
@@ -46,6 +54,11 @@ class Event(models.Model):
     pull_request = models.ForeignKey(PullRequest, on_delete=models.CASCADE)
     event = models.CharField(max_length=30)
     label = models.CharField(max_length=30, null=True)
+    actor = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(blank=True, null=True)
+
+    def time_since_pr(self):
+        return self.created_at - self.pull_request.created_at
 
     def __str__(self):
         if self.label is None:
