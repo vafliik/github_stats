@@ -14,9 +14,12 @@ Also, environmental variable `GITHUB_TOKEN` with GitHub token needs to be set
 # # django web application
 
 **Steps to run the app locally**
-`python3 manage.py makemigrations` - create the migration file based on models in the app
-`python3 manage.py migrate` - apply the migrations
-`python3 manage.py runserver` - start the webserwer, by default on localhost:8000
+
+1. `python3 manage.py makemigrations` - create the migration file based on models in the app
+
+2. `python3 manage.py migrate` - apply the migrations
+
+3. `python3 manage.py runserver` - start the webserwer, by default on localhost:8000
 
 
 
