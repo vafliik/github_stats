@@ -21,7 +21,11 @@ Also, environmental variable `GITHUB_TOKEN` with GitHub token needs to be set
 
 3. `python3 manage.py runserver` - start the webserwer, by default on localhost:8000
 
+# # Python requirements
 
+`pip install Django`
+
+`pip install python-dateutil`
 
 
 
