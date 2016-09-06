@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 from pr_stats import services
 from pr_stats.models import PullRequest, Event, User
-from pr_stats.services import median_value
+from pr_stats.services import median_value, create_user_if_not_already
 
 
 def index(request):
@@ -61,8 +61,6 @@ def pulls(request):
     PullRequest.objects.all().delete()
     Event.objects.all().delete()
 
-    data_users = services.get_users()
-
     data = services.get_pulls(state='closed', per_page=20)
     for pull in data:
         pr = PullRequest()
@@ -83,8 +81,3 @@ def pulls(request):
 
     return redirect('pr_stats:index')
 
-
-def create_user_if_not_already(user):
-    user_created = User.objects.get_or_create(id=user['id'], login=user['login'], avatar_url = user['avatar_url'], url = user['url'])
-    # tuple ({user}, created=True/False)
-    return user_created[0]
