@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 from pr_stats import services
 from pr_stats.models import PullRequest, Event, User
-from pr_stats.services import median_value, create_user_if_not_already
+from pr_stats.services import median_value, create_user_if_not_already, save_pulls
 
 
 def index(request):
@@ -58,26 +58,7 @@ def statistics(request):
 
 
 def pulls(request):
-    PullRequest.objects.all().delete()
-    Event.objects.all().delete()
-
-    data = services.get_pulls(state='closed', per_page=20)
-    for pull in data:
-        pr = PullRequest()
-        pr.number = pull['number']
-        pr.title = pull['title']
-        pr.user = create_user_if_not_already(pull['user'])
-        pr.state = pull['state']
-        pr.body = pull['body']
-        pr.created_at = dateutil.parser.parse(pull['created_at'])
-
-        if pull['closed_at'] is not None:
-            pr.closed_at = dateutil.parser.parse(pull['closed_at'])
-            pr.closed_after_sec = pr.time_open_sec()
-
-        pr.html_url = pull['html_url']
-
-        pr.save()
+    save_pulls()
 
     return redirect('pr_stats:index')
 

@@ -7,6 +7,8 @@
 <p><a href="{% url 'pr_stats:pulls' %}">Load data</a></p>
 <p><a href="{% url 'pr_stats:statistics' %}">Stats</a></p>
 
+<p>Total PRs in DB: {{ pr_list.count }}</p>
+
 {% if pr_list %}
 <table class="table" id="pr_table">
     <thead>
@@ -36,7 +38,7 @@
 
 </table>
 {% else %}
-<p>No polls are available.</p>
+<p>No Pull Requests are available.</p>
 {% endif %}
 
 
@@ -44,29 +46,11 @@
 
 <script>
 $(document).ready(function() {
-$('#pr_table').dataTable();
+    $('#pr_table').dataTable( {
+        "pageLength": 50,
+        "order": [[0, 'desc']]
+    });
 });
 </script>
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-      google.charts.load('current', {'packages':['timeline']});
-      google.charts.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var container = document.getElementById('timeline');
-        var chart = new google.visualization.Timeline(container);
-        var dataTable = new google.visualization.DataTable();
-
-        dataTable.addColumn({ type: 'string', id: 'PullRequest' });
-        dataTable.addColumn({ type: 'date', id: 'Start' });
-        dataTable.addColumn({ type: 'date', id: 'End' });
-        dataTable.addRows([
-        {% for pull in pr_list %}
-          [ '{{pull.title}}', new Date({{ pull.created_at_js}}), new Date({{pull.closed_at_js}}) ] {% if not forloop.last %},{% endif %}
-        {% endfor %}
-          ]);
-
-        chart.draw(dataTable);
-      }
-</script>
 {% endblock %}
