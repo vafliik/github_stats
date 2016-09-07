@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 from pr_stats import services
 from pr_stats.models import PullRequest, Event, User
-from pr_stats.services import median_value, create_user_if_not_already, get_all_pulls
+from pr_stats.services import median_value, create_user_if_not_already, get_all_pulls, update_pulls
 
 
 def index(request):
@@ -56,7 +56,9 @@ def statistics(request):
 
 
 def pulls(request):
-    get_all_pulls()
+    # get_all_pulls()
+    last_update = PullRequest.objects.aggregate(Max('updated_at'))['updated_at__max'].isoformat()
+    update_pulls(last_update)
 
     return redirect('pr_stats:index')
 

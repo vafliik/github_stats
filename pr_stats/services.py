@@ -50,9 +50,12 @@ def get_all_pulls(state='all', per_page=30):
         data = json.loads(response.text)
         prs_from_data(data)
 
-def update_pulls(last_updated):
+def update_pulls(last_updated=None):
 
-    params = {'q': 'type:pr repo:salsita/circlesorg updated:>{}'.format(last_updated)}
+    if last_updated is not None:
+        params = {'q': 'type:pr repo:salsita/circlesorg updated:>{}'.format(last_updated)}
+    else:
+        params = {'q': 'type:pr repo:salsita/circlesorg'}
 
     response = github_reqest(url='https://api.github.com/search/issues', params=params)
 
@@ -78,10 +81,10 @@ def save_pr_from_dict(pull):
     pr, created = PullRequest.objects.update_or_create(
         pk = pull['number'],
         user = user,
-        created_at = dateutil.parser.parse(pull['created_at']),
-        html_url = pull['html_url']
     )
 
+    pr.created_at = dateutil.parser.parse(pull['created_at'])
+    pr.html_url = pull['html_url']
     pr.title = pull['title']
     pr.state = pull['state']
     pr.body = pull['body']
