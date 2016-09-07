@@ -1,8 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gitignore
 .idea/
-db.sqlite3
 __pycache__/
-*.py[cod]
+/*.py[cod]
 *$py.class
 GitHubStats.iml
+/db.sqlite3
+/pr_stats/migrations

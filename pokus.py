@@ -1,20 +1,15 @@
 import json
 import os
-
 import requests
 
 TOKEN = os.environ['GITHUB_TOKEN']
 
-r = requests.head('https://api.github.com/repos/salsita/circlesorg/pulls?state=closed&per_page=20', headers={'Authorization': 'token {}'.format(TOKEN)})
+params = {'q': 'type:pr author:vafliik repo:salsita/circlesorg updated:>2016-09-06T20:29:09+00:00'}
 
-if 'next' in r.links.keys():
-    print ('I has next')
-    r2 = requests.head(r.links['last']['url'], headers={'Authorization': 'token {}'.format(TOKEN)} )
+r = requests.get('https://api.github.com/search/issues', params=params,
+                 headers={'Authorization': 'token {}'.format(TOKEN)})
 
-if 'last' in r.links.keys():
-    print ('I has last')
-    r2 = requests.head(r.links['last']['url'], headers={'Authorization': 'token {}'.format(TOKEN)} )
+data = json.loads(r.text)
 
-# jason = json.loads(r.text)
-
-print(r.links)
+for pr in data['items']:
+    print(pr['title'], pr['updated_at'])

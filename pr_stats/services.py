@@ -59,11 +59,12 @@ def prs_from_response(response):
         save_pr_from_dict(pull)
 
 
-
 def save_pr_from_dict(pull):
+
     try:
         PullRequest.objects.get(pk=pull['number'])
         raise Pull_Request_Exists
+
     except PullRequest.DoesNotExist:
         pr = PullRequest()
         pr.number = pull['number']
@@ -72,6 +73,7 @@ def save_pr_from_dict(pull):
         pr.state = pull['state']
         pr.body = pull['body']
         pr.created_at = dateutil.parser.parse(pull['created_at'])
+        pr.updated_at = dateutil.parser.parse(pull['updated_at'])
         if pull['closed_at'] is not None:
             pr.closed_at = dateutil.parser.parse(pull['closed_at'])
             pr.closed_after_sec = pr.time_open_sec()
