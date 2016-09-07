@@ -1,5 +1,8 @@
+import logging
+
 import dateutil.parser
-from datetime import timedelta
+
+from datetime import datetime, timezone, timedelta
 from django.db.models import Min, F, Max, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -7,6 +10,7 @@ from django.http import HttpResponse
 from pr_stats import services
 from pr_stats.models import PullRequest, Event, User
 from pr_stats.services import median_value, create_user_if_not_already, get_all_pulls, update_pulls
+
 
 
 def index(request):
@@ -57,8 +61,12 @@ def statistics(request):
 
 def pulls(request):
     # get_all_pulls()
-    last_update = PullRequest.objects.aggregate(Max('updated_at'))['updated_at__max'].isoformat()
-    update_pulls(last_update)
+
+    last_update = PullRequest.objects.aggregate(Max('updated_at'))['updated_at__max']\
+
+    buffer_time = last_update - timedelta(minutes=15)
+
+    update_pulls(buffer_time.isoformat())
 
     return redirect('pr_stats:index')
 

@@ -5,13 +5,11 @@ import os
 import dateutil.parser
 import requests
 
-from datetime import datetime, timezone, timedelta
-
 from pr_stats.models import PullRequest, User
 
 TOKEN = os.environ['GITHUB_TOKEN']
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("service")
 
 
 def get_users():
@@ -51,6 +49,7 @@ def get_all_pulls(state='all', per_page=30):
         prs_from_data(data)
 
 def update_pulls(last_updated=None):
+    logger.info("Last updated: " + last_updated)
 
     if last_updated is not None:
         params = {'q': 'type:pr repo:salsita/circlesorg updated:>{}'.format(last_updated)}
@@ -71,6 +70,7 @@ def update_pulls(last_updated=None):
 def prs_from_data(data):
 
     for pull in data:
+        logger.info("Processing PR: {} {}".format(pull['number'], pull['title']) )
         save_pr_from_dict(pull)
 
 
