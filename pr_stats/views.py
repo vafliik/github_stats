@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 from pr_stats import services
 from pr_stats.models import PullRequest, Event, User
-from pr_stats.services import median_value, create_user_if_not_already, save_pulls
+from pr_stats.services import median_value, create_user_if_not_already, get_all_pulls
 
 
 def index(request):
@@ -40,14 +40,12 @@ def detail(request, pr_number):
 
 
 def statistics(request):
-    state = request.GET.get('state', None)
     pulls = PullRequest.objects.filter(state='closed')
     fastest_pr = pulls.order_by('closed_after_sec')[:1]
     slowest_pr = pulls.order_by('-closed_after_sec')[:1]
     average_time = pulls.aggregate(Avg('closed_after_sec'))['closed_after_sec__avg']
     median_time = median_value(pulls, 'closed_after_sec')
     context = {
-        'argument': state,
         'pulls': pulls,
         'fastest_pr': fastest_pr[0],
         'slowest_pr': slowest_pr[0],
@@ -58,7 +56,7 @@ def statistics(request):
 
 
 def pulls(request):
-    save_pulls()
+    get_all_pulls()
 
     return redirect('pr_stats:index')
 

@@ -16,8 +16,6 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from pr_stats.services import save_pulls
-
 urlpatterns = [
     url(r'', include('pr_stats.urls')),
     url(r'^pr_stats/', include('pr_stats.urls')),

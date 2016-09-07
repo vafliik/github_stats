@@ -19,6 +19,7 @@ class PullRequest(models.Model):
     state = models.CharField(max_length=30)
     body = models.TextField(default='')
     created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     closed_at = models.DateTimeField(blank=True, null=True)
     closed_after_sec = models.IntegerField(blank=True, null=True)
     html_url = models.URLField(null=True)
