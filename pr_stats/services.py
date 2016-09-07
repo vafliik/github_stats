@@ -36,22 +36,38 @@ def get_events(pr_number):
     return events
 
 
-def save_pulls(state='all', per_page=30):
+def get_all_pulls(state='all', per_page=30):
 
     params = {'state': state, 'per_page': per_page}
 
     response = github_reqest(url='https://api.github.com/repos/salsita/circlesorg/pulls', params=params)
 
-    prs_from_response(response)
+    data = json.loads(response.text)
+    prs_from_data(data)
 
     while 'next' in response.links.keys():
         response = github_reqest(url=response.links['next']['url'], params=params)
-        prs_from_response(response)
+        data = json.loads(response.text)
+        prs_from_data(data)
+
+def update_pulls(last_updated):
+
+    params = {'q': 'type:pr repo:salsita/circlesorg updated:>{}'.format(last_updated)}
+
+    response = github_reqest(url='https://api.github.com/search/issues', params=params)
+
+    data = json.loads(response.text)
+    prs_from_data(data['items'])
+
+    while 'next' in response.links.keys():
+        response = github_reqest(url=response.links['next']['url'], params=params)
+        data = json.loads(response.text)
+        prs_from_data(data['items'])
 
 
-def prs_from_response(response):
-    pull_requests = json.loads(response.text)
-    for pull in pull_requests:
+def prs_from_data(data):
+
+    for pull in data:
         save_pr_from_dict(pull)
 
 
@@ -60,15 +76,20 @@ def save_pr_from_dict(pull):
     user = create_user_if_not_already(pull['user'])
 
     pr, created = PullRequest.objects.update_or_create(
-        number = pull['number'],
-        title = pull['title'],
+        pk = pull['number'],
         user = user,
-        state = pull['state'],
-        body = pull['body'],
         created_at = dateutil.parser.parse(pull['created_at']),
-        updated_at = dateutil.parser.parse(pull['updated_at']),
         html_url = pull['html_url']
     )
+
+    pr.title = pull['title']
+    pr.state = pull['state']
+    pr.body = pull['body']
+    pr.updated_at = dateutil.parser.parse(pull['updated_at'])
+    if pull['closed_at'] is not None:
+        pr.closed_at = dateutil.parser.parse(pull['closed_at'])
+        pr.closed_after_sec = pr.time_open_sec()
+    pr.save()
 
 def create_user_if_not_already(user):
     user_created = User.objects.get_or_create(id=user['id'], login=user['login'], avatar_url=user['avatar_url'],
