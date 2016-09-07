@@ -5,5 +5,5 @@ __pycache__/
 /*.py[cod]
 *$py.class
 GitHubStats.iml
-/db.sqlite3
+*.sqlite3
 /pr_stats/migrations

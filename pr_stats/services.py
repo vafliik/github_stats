@@ -42,15 +42,11 @@ def save_pulls(state='all', per_page=30):
 
     response = github_reqest(url='https://api.github.com/repos/salsita/circlesorg/pulls', params=params)
 
-    try:
+    prs_from_response(response)
+
+    while 'next' in response.links.keys():
+        response = github_reqest(url=response.links['next']['url'], params=params)
         prs_from_response(response)
-
-        while 'next' in response.links.keys():
-            response = github_reqest(url=response.links['next']['url'], params=params)
-            prs_from_response(response)
-
-    except Pull_Request_Exists:
-        return
 
 
 def prs_from_response(response):
@@ -61,25 +57,18 @@ def prs_from_response(response):
 
 def save_pr_from_dict(pull):
 
-    try:
-        PullRequest.objects.get(pk=pull['number'])
-        raise Pull_Request_Exists
+    user = create_user_if_not_already(pull['user'])
 
-    except PullRequest.DoesNotExist:
-        pr = PullRequest()
-        pr.number = pull['number']
-        pr.title = pull['title']
-        pr.user = create_user_if_not_already(pull['user'])
-        pr.state = pull['state']
-        pr.body = pull['body']
-        pr.created_at = dateutil.parser.parse(pull['created_at'])
-        pr.updated_at = dateutil.parser.parse(pull['updated_at'])
-        if pull['closed_at'] is not None:
-            pr.closed_at = dateutil.parser.parse(pull['closed_at'])
-            pr.closed_after_sec = pr.time_open_sec()
-        pr.html_url = pull['html_url']
-        pr.save()
-
+    pr, created = PullRequest.objects.update_or_create(
+        number = pull['number'],
+        title = pull['title'],
+        user = user,
+        state = pull['state'],
+        body = pull['body'],
+        created_at = dateutil.parser.parse(pull['created_at']),
+        updated_at = dateutil.parser.parse(pull['updated_at']),
+        html_url = pull['html_url']
+    )
 
 def create_user_if_not_already(user):
     user_created = User.objects.get_or_create(id=user['id'], login=user['login'], avatar_url=user['avatar_url'],
@@ -99,6 +88,3 @@ def median_value(queryset, term):
 def github_reqest(url, params=None):
     return requests.get(url=url, params=params,
                         headers={'Authorization': 'token {}'.format(TOKEN)})
-
-class Pull_Request_Exists(Exception):
-    pass
