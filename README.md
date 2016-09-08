@@ -27,5 +27,11 @@ Also, environmental variable `GITHUB_TOKEN` with GitHub token needs to be set
 
 `pip install python-dateutil`
 
+# # # TODO
 
+* Async loading (now only wait and redirect)
+* Get labels with PRs (now the labels are downloaded only if PR detail is displayed, plus it does not update)
+* Repo management - get rid of the hardcoded values
+* Unit tests (ehm)
+* Refactoring, of course
 
