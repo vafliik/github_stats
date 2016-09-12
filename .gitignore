@@ -6,3 +6,4 @@ __pycache__/
 GitHubStats.iml
 *.sqlite3
 /pr_stats/migrations
+debug.log
