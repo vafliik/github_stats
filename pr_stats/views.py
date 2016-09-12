@@ -25,20 +25,6 @@ def detail(request, pr_number):
     pr = get_object_or_404(PullRequest, pk=pr_number)
     events = pr.event_set.all()
 
-    if not events:
-        event_data = services.get_events(pr.number)
-
-        for event in event_data:
-            e = Event(pull_request=pr)
-            e.id = event['id']
-            e.event = event['event']
-            e.label = event['label']['name'] if 'label' in event.keys() else None
-            e.actor = create_user_if_not_already(event['actor'])
-            e.created_at = dateutil.parser.parse(event['created_at'])
-            e.save()
-
-        events = pr.event_set.all()
-
     context = {'pr': pr, 'events': events}
     return render(request, 'pr_stats/detail.html', context)
 
