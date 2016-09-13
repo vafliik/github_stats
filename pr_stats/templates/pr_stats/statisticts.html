@@ -4,6 +4,7 @@
 <h1>{% block title %}Stats{% endblock %}</h1>
 
 <b>Stats based on data from {{ pulls.count }} PR's</b>
+<p>Used filter: {{ query_filter }}</p>
 
 <table class="table">
     <thead>
@@ -38,6 +39,9 @@
     </tr>
     </tbody>
 </table>
+
+<p><a href="{% url 'pr_stats:statistics' previous.year previous.month previous.day %}">Previous week</a> |
+<a href="{% url 'pr_stats:statistics' next.year next.month next.day %}">Next week</a></p>
 
 <p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
 
