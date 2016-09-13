@@ -46,13 +46,15 @@ def statistics(request):
 
 
 def pulls(request):
-    # get_all_pulls()
 
-    last_update = PullRequest.objects.aggregate(Max('updated_at'))['updated_at__max']\
+    last_update = PullRequest.objects.aggregate(Max('updated_at'))['updated_at__max']
+    if last_update is not None:
+        buffer_time = last_update - timedelta(minutes=15)
 
-    buffer_time = last_update - timedelta(minutes=15)
+        update_pulls(buffer_time.isoformat())
 
-    update_pulls(buffer_time.isoformat())
+    else:
+        update_pulls()
 
     return redirect('pr_stats:index')
 
