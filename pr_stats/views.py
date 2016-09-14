@@ -80,3 +80,9 @@ def pulls(request):
         update_pulls()
 
     return redirect('pr_stats:index')
+
+def pulls_all(request):
+
+    update_pulls()
+
+    return redirect('pr_stats:index')
