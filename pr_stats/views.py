@@ -15,10 +15,8 @@ from pr_stats.services import median_value, create_user_if_not_already, get_all_
 
 
 def index(request):
-    today = date.today()
-    this_monday = today - timedelta(days=today.weekday())
 
-    pr_list = PullRequest.objects.filter(created_at__gte=this_monday).order_by('-number')
+    pr_list = PullRequest.objects.order_by('-number')
     context = {
         'pr_list': pr_list,
     }
