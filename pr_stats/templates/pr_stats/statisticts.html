@@ -45,4 +45,46 @@
 
 <p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
 
+{% if pulls %}
+<table class="table" id="pr_table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>User</th>
+            <th>State</th>
+            <th>Created</th>
+            <th>Duration</th>
+            <th>Links</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for pull in pulls %}
+        <tr class="{{pull.alert}}">
+            <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.number }}</a></td>
+            <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></td>
+            <td><img src="{{ pull.user.avatar_url }}" style="width:24px;height:24px;"></td>
+            <td>{{ pull.state }}</td>
+            <td>{{ pull.created_at }}</td>
+            <td data-order="{{ pull.time_open_sec }}">{{ pull.time_open }}</td>
+            <td><a href="{{pull.html_url}}" target="_blank">GitHub</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+{% else %}
+<p>No Pull Requests are available.</p>
+{% endif %}
+
+</table>
+
+<script>
+$(document).ready(function() {
+    $('#pr_table').dataTable( {
+        "pageLength": 50,
+        "order": [[0, 'desc']]
+    });
+});
+</script>
+
 {% endblock %}
