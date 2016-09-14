@@ -5,5 +5,4 @@ __pycache__/
 *$py.class
 GitHubStats.iml
 *.sqlite3
-/pr_stats/migrations
 debug.log
