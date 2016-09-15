@@ -42,10 +42,10 @@ def statistics(request, year=None, month=None, day=None):
         this_monday = (today - timedelta(days=today.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
         start = this_monday
 
-    end = (start + timedelta(days=7)).replace(hour=23, minute=59, second=59, microsecond=99)
+    end = (start + timedelta(days=6)).replace(hour=23, minute=59, second=59, microsecond=99)
 
     previous = start - timedelta(days=7)
-    next = start + timedelta(days=7)
+    next = start + timedelta(days=6)
 
     query_filter = {'state': 'closed', 'created_at__gte': start, 'created_at__lt': end}
 
