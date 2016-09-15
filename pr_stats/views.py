@@ -45,7 +45,7 @@ def statistics(request, year=None, month=None, day=None):
     end = (start + timedelta(days=6)).replace(hour=23, minute=59, second=59, microsecond=99)
 
     previous = start - timedelta(days=7)
-    next = start + timedelta(days=6)
+    next = start + timedelta(days=7)
 
     query_filter = {'state': 'closed', 'created_at__gte': start, 'created_at__lt': end}
 
@@ -79,8 +79,8 @@ def pulls(request):
 
     return redirect('pr_stats:index')
 
-def pulls_all(request):
+def pulls_all(request,q):
 
-    update_pulls()
+    update_pulls(q=q)
 
     return redirect('pr_stats:index')

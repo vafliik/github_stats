@@ -48,28 +48,33 @@ def get_all_pulls(state='all', per_page=30):
         prs_from_data(data)
 
 
-def update_pulls(last_updated=None):
+def update_pulls(last_updated=None, q=None):
 
-    if last_updated is not None:
-        logger.info("Last updated: " + last_updated)
-        params = {'q': 'type:pr repo:salsita/circlesorg updated:>{}'.format(last_updated)}
+    if q is None:
+        if last_updated is not None:
+            logger.info("Last updated: " + last_updated)
+            params = {'q': 'type:pr repo:salsita/circlesorg updated:>{}'.format(last_updated)}
+        else:
+            params = {'q': 'type:pr repo:salsita/circlesorg'}
+
+        response = github_reqest(url='https://api.github.com/search/issues', params=params)
+
     else:
-        params = {'q': 'type:pr repo:salsita/circlesorg'}
-
-    response = github_reqest(url='https://api.github.com/search/issues', params=params)
+        response = github_reqest(url='https://api.github.com/search/issues?q=type:pr+repo:salsita/circlesorg+created:' + q)
 
     data = json.loads(response.text)
+    logger.warn(data)
     prs_from_data(data['items'])
 
     while 'next' in response.links.keys():
-        response = github_reqest(url=response.links['next']['url'], params=params)
+        response = github_reqest(url=response.links['next']['url'])
         data = json.loads(response.text)
         prs_from_data(data['items'])
 
 
 def prs_from_data(data):
     for pull in data:
-        logger.info("Processing PR: {} {}".format(pull['number'], pull['title']))
+        logger.info("Processing PR: {} {}, created: {}".format(pull['number'], pull['title'], pull['created_at']))
         pr = save_pr_from_dict(pull)
         add_events_to_pr(pr)
 
