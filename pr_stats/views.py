@@ -15,7 +15,6 @@ from pr_stats.services import median_value, create_user_if_not_already, get_all_
 
 
 def index(request):
-
     pr_list = PullRequest.objects.order_by('-number')
     context = {
         'pr_list': pr_list,
@@ -36,7 +35,8 @@ def statistics(request, year=None, month=None, day=None):
         year = int(year)
         month = int(month)
         day = int(day)
-        start = django.utils.timezone.now().replace(year=year, month=month, day=day, hour=0, minute=0, second=0, microsecond=0)
+        start = django.utils.timezone.now().replace(year=year, month=month, day=day, hour=0, minute=0, second=0,
+                                                    microsecond=0)
     else:
         today = django.utils.timezone.now()
         this_monday = (today - timedelta(days=today.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -47,23 +47,29 @@ def statistics(request, year=None, month=None, day=None):
     previous = start - timedelta(days=7)
     next = start + timedelta(days=7)
 
-    query_filter = {'state': 'closed', 'created_at__gte': start, 'created_at__lt': end}
+    query_filter = {'created_at__gte': start, 'created_at__lt': end}
 
-    pulls = PullRequest.objects.filter(**query_filter)
-    fastest_pr = pulls.order_by('closed_after_sec')[:1]
-    slowest_pr = pulls.order_by('-closed_after_sec')[:1]
-    average_time = pulls.aggregate(Avg('closed_after_sec'))['closed_after_sec__avg']
-    median_time = median_value(pulls, 'closed_after_sec')
+    open_pulls = PullRequest.objects.filter(**query_filter, **{'state': 'open'})
+    closed_pulls = PullRequest.objects.filter(**query_filter, **{'state': 'closed'})
+    fastest_pr = closed_pulls.order_by('closed_after_sec')[:1]
+    slowest_pr = closed_pulls.order_by('-closed_after_sec')[:1]
+    average_time = closed_pulls.aggregate(Avg('closed_after_sec'))['closed_after_sec__avg']
+    median_time = median_value(closed_pulls, 'closed_after_sec') if closed_pulls else 0
     context = {
-        'pulls': pulls,
+        'pulls': closed_pulls,
+        'open_pulls': open_pulls,
         'query_filter': query_filter,
         'previous': previous,
         'next': next,
-        'fastest_pr': fastest_pr[0],
-        'slowest_pr': slowest_pr[0],
-        'average_time': timedelta(seconds=average_time),
-        'median_time': timedelta(seconds=median_time)
     }
+    if closed_pulls.exists():
+        context['fastest_pr'] = fastest_pr[0]
+        context['slowest_pr'] = slowest_pr[0]
+        context['average_time'] = timedelta(seconds=average_time)
+        context['median_time'] = timedelta(seconds=median_time)
+
+    context['longest_open'] = open_pulls.order_by('-created_at')[:1][0] if open_pulls else None
+
     return render(request, 'pr_stats/statisticts.html', context)
 
 
@@ -79,8 +85,8 @@ def pulls(request):
 
     return redirect('pr_stats:index')
 
-def pulls_all(request,q):
 
+def pulls_all(request, q):
     update_pulls(q=q)
 
     return redirect('pr_stats:index')

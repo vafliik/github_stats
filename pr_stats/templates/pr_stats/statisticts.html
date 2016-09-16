@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>{% block title %}Stats{% endblock %}</h1>
+<h1>{% block title %}Hard data{% endblock %}</h1>
 
-<b>Stats based on data from {{ pulls.count }} PR's</b>
+<h2>Weekly stats</h2>
+<b>Closed {{ pulls.count|default_if_none:"0" }} PR's</b>
+<b>Open {{ open_pulls.count }} PR's</b>
 <p>Used filter: {{ query_filter }}</p>
 
 <table class="table">
@@ -16,6 +18,7 @@
     </thead>
 
     <tbody>
+    {% if pulls %}
     <tr class="">
         <td>Fastest PR (shortest time opened)</td>
         <td>{{ fastest_pr.time_open }}</td>
@@ -37,6 +40,15 @@
         <td>{{ median_time }}</td>
         <td>N/A</td>
     </tr>
+    {% endif %}
+    {% if longest_open %}
+    <tr class="">
+
+        <td>Longest open</td>
+        <td>{{ longest_open.time_open }}</td>
+        <td><a href="{% url 'pr_stats:detail' longest_open.number %}">{{ longest_open.title }}</a></td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>
 
@@ -44,6 +56,40 @@
 <a href="{% url 'pr_stats:statistics' next.year next.month next.day %}">Next week</a></p>
 
 <p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
+
+{% if open_pulls %}
+<table class="table" id="open_pr_table">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>User</th>
+        <th>State</th>
+        <th>Created</th>
+        <th>Duration</th>
+        <th>Links</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for pull in open_pulls %}
+    <tr class="{{pull.alert}}">
+        <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.number }}</a></td>
+        <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></td>
+        <td data-order="{{ pull.user.login }}"><img src="{{ pull.user.avatar_url }}" style="width:24px;height:24px;"></td>
+        <td>{{ pull.state }}</td>
+        <td>{{ pull.created_at }}</td>
+        <td data-order="{{ pull.time_open_sec }}">{{ pull.time_open }}</td>
+        <td><a href="{{pull.html_url}}" target="_blank">GitHub</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    {% else %}
+    <p>No Open Pull Requests</p>
+
+</table>
+{% endif %}
+
 
 {% if pulls %}
 <table class="table" id="pr_table">
@@ -64,7 +110,7 @@
         <tr class="{{pull.alert}}">
             <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.number }}</a></td>
             <td><a href="{% url 'pr_stats:detail' pull.number %}">{{ pull.title }}</a></td>
-            <td><img src="{{ pull.user.avatar_url }}" style="width:24px;height:24px;"></td>
+            <td data-order="{{ pull.user.login }}"><img src="{{ pull.user.avatar_url }}" style="width:24px;height:24px;"></td>
             <td>{{ pull.state }}</td>
             <td>{{ pull.created_at }}</td>
             <td data-order="{{ pull.time_open_sec }}">{{ pull.time_open }}</td>
@@ -74,9 +120,9 @@
     </tbody>
 {% else %}
 <p>No Pull Requests are available.</p>
-{% endif %}
 
 </table>
+{% endif %}
 
 <script>
 $(document).ready(function() {
