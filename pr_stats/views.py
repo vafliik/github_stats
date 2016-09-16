@@ -24,7 +24,8 @@ def index(request):
 
 def detail(request, pr_number):
     pr = get_object_or_404(PullRequest, pk=pr_number)
-    events = pr.event_set.all()
+
+    events = pr.event_set.filter(event__in=['labeled', 'unlabeled'])
 
     context = {'pr': pr, 'events': events}
     return render(request, 'pr_stats/detail.html', context)

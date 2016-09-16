@@ -5,9 +5,16 @@
 {{pr.created_at}}
 <ul>
     {% for event in events %}
-    <li><img src="{{ event.actor.avatar_url }}" style="width:24px;height:24px;">{{ event.event }} {{ event.label|default_if_none:""  }} - {{ event.time_since_pr }}</li>
+    <li><img src="{{ event.actor.avatar_url }}" style="width:24px;height:24px;">{{ event.event }} {{ event.label|default_if_none:""  }} - {{ event.time_since_pr }}  {{ event.label_time|default_if_none:""}}</li>
     {% endfor %}
 </ul>
+
+<p>Bugs: {{ pr.bugs }}</p>
+<p>Labels:
+    {% for label,x in pr.labels_duration.items %}
+        {{ label }} : {{ x }}
+    {% endfor %}
+</p>
 
 <p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
 {% endblock %}

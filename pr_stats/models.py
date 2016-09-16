@@ -3,6 +3,7 @@ import time
 
 from django.db import models
 
+
 class User(models.Model):
     id = models.IntegerField(primary_key=True)
     login = models.CharField(max_length=30)
@@ -11,6 +12,7 @@ class User(models.Model):
 
     def __str__(self):
         return self.login
+
 
 class PullRequest(models.Model):
     number = models.IntegerField(primary_key=True)
@@ -39,6 +41,28 @@ class PullRequest(models.Model):
     def closed_at_js(self):
         return int(time.mktime(self.closed_at.timetuple())) * 1000
 
+    def bugs(self):
+        bugs = 0
+        events = self.event_set.filter(event__in=['labeled', 'unlabeled'])
+
+        for event in events:
+            if event.event == 'labeled' and event.label == 'bug':
+                bugs += 1
+
+        return bugs
+
+    def labels_duration(self):
+        duration = {}
+        events = self.event_set.filter(event='unlabeled')
+
+        for event in events:
+            if event.label in duration.keys():
+                duration[event.label] += event.label_time()
+            else:
+                duration[event.label] = event.label_time()
+
+        return duration
+
     def alert(self):
         if self.time_open() > timedelta(days=1):
             return 'danger'
@@ -50,6 +74,7 @@ class PullRequest(models.Model):
     def __str__(self):
         return self.title
 
+
 class Event(models.Model):
     id = models.IntegerField(primary_key=True)
     pull_request = models.ForeignKey(PullRequest, on_delete=models.CASCADE)
@@ -60,6 +85,15 @@ class Event(models.Model):
 
     def time_since_pr(self):
         return self.created_at - self.pull_request.created_at
+
+    def label_time(self):
+        if self.label is None or self.event == 'labeled':
+            return None
+        else:
+            # find when the label was added
+            label_added = Event.objects.filter(pull_request=self.pull_request, event='labeled', label=self.label,
+                                               created_at__lte=self.created_at)[:1][0]
+            return self.created_at - label_added.created_at
 
     def __str__(self):
         if self.label is None:
