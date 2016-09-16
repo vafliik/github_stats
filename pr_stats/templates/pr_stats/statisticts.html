@@ -10,10 +10,9 @@
     <a href="{% url 'pr_stats:statistics' current.year current.month current.day %}">Current week</a> |
     <a href="{% url 'pr_stats:statistics' next.year next.month next.day %}">Next week</a></p>
 
-
+<h3>{{ query_filter.created_at__gte | date:'M d, Y'}} - {{ query_filter.created_at__lt | date:'M d, Y'}} </h3>
 <b>Closed {{ pulls.count|default_if_none:"0" }} PR's</b>
 <b>Open {{ open_pulls.count }} PR's</b>
-<p>Used filter: {{ query_filter }}</p>
 
 {% if pulls or open_pulls%}
 <table class="table">
@@ -73,7 +72,9 @@
 
 
 {% if open_pulls %}
+
 <table class="table" id="open_pr_table">
+    <caption>Open PRs</caption>
     <thead>
     <tr>
         <th>#</th>
@@ -108,6 +109,7 @@
 
 {% if pulls %}
 <table class="table" id="pr_table">
+    <caption>Closed PRs</caption>
     <thead>
         <tr>
             <th>#</th>
@@ -142,9 +144,16 @@
 <script>
 $(document).ready(function() {
     $('#pr_table').dataTable( {
-        "pageLength": 50,
+        "paging": false,
+        "searching": false,
         "order": [[0, 'desc']]
     });
+    $('#open_pr_table').dataTable( {
+        "paging": false,
+        "searching": false,
+        "order": [[0, 'desc']]
+    });
+
 });
 </script>
 
