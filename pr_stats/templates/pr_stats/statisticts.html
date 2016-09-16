@@ -2,12 +2,20 @@
 {% block content %}
 
 <h1>{% block title %}Hard data{% endblock %}</h1>
+<p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
 
 <h2>Weekly stats</h2>
+
+<p><a href="{% url 'pr_stats:statistics' previous.year previous.month previous.day %}">Previous week</a> |
+    <a href="{% url 'pr_stats:statistics' current.year current.month current.day %}">Current week</a> |
+    <a href="{% url 'pr_stats:statistics' next.year next.month next.day %}">Next week</a></p>
+
+
 <b>Closed {{ pulls.count|default_if_none:"0" }} PR's</b>
 <b>Open {{ open_pulls.count }} PR's</b>
 <p>Used filter: {{ query_filter }}</p>
 
+{% if pulls or open_pulls%}
 <table class="table">
     <thead>
     <tr>
@@ -49,13 +57,20 @@
         <td><a href="{% url 'pr_stats:detail' longest_open.number %}">{{ longest_open.title }}</a></td>
     </tr>
     {% endif %}
+    <tr class="">
+
+        <td>Most bugs</td>
+        <td>{{ most_bugs.0 }}</td>
+        {% if most_bugs.1 %}
+            <td><a href="{% url 'pr_stats:detail' most_bugs.1.number %}">{{ most_bugs.1.title }}</a></td>
+        {% else %}
+        <td>N/A</td>
+        {% endif %}
+    </tr>
     </tbody>
 </table>
+{% endif %}
 
-<p><a href="{% url 'pr_stats:statistics' previous.year previous.month previous.day %}">Previous week</a> |
-<a href="{% url 'pr_stats:statistics' next.year next.month next.day %}">Next week</a></p>
-
-<p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
 
 {% if open_pulls %}
 <table class="table" id="open_pr_table">

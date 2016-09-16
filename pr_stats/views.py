@@ -9,9 +9,9 @@ from django.db.models import Min, F, Max, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from pr_stats import services
 from pr_stats.models import PullRequest, Event, User
-from pr_stats.services import median_value, create_user_if_not_already, get_all_pulls, update_pulls
+from pr_stats.services import create_user_if_not_already, get_all_pulls, update_pulls
+from pr_stats.statistics import median_value, pr_with_most_bugs
 
 
 def index(request):
@@ -32,6 +32,9 @@ def detail(request, pr_number):
 
 
 def statistics(request, year=None, month=None, day=None):
+    today = django.utils.timezone.now()
+    this_monday = (today - timedelta(days=today.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+
     if year:
         year = int(year)
         month = int(month)
@@ -39,8 +42,6 @@ def statistics(request, year=None, month=None, day=None):
         start = django.utils.timezone.now().replace(year=year, month=month, day=day, hour=0, minute=0, second=0,
                                                     microsecond=0)
     else:
-        today = django.utils.timezone.now()
-        this_monday = (today - timedelta(days=today.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
         start = this_monday
 
     end = (start + timedelta(days=6)).replace(hour=23, minute=59, second=59, microsecond=99)
@@ -61,6 +62,7 @@ def statistics(request, year=None, month=None, day=None):
         'open_pulls': open_pulls,
         'query_filter': query_filter,
         'previous': previous,
+        'current': this_monday,
         'next': next,
     }
     if closed_pulls.exists():
@@ -70,6 +72,7 @@ def statistics(request, year=None, month=None, day=None):
         context['median_time'] = timedelta(seconds=median_time)
 
     context['longest_open'] = open_pulls.order_by('-created_at')[:1][0] if open_pulls else None
+    context['most_bugs'] = pr_with_most_bugs(closed_pulls)
 
     return render(request, 'pr_stats/statisticts.html', context)
 
