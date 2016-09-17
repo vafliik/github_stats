@@ -1,3 +1,7 @@
 body {
     padding: 20px;
 }
+
+table.dataTable td {
+    font-size: 85%;
+}

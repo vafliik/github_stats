@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import timedelta
 
 import dateutil.parser
 import requests
@@ -124,16 +125,6 @@ def create_user_if_not_already(user):
                                               url=user['url'])
     # tuple ({user}, created=True/False)
     return user_created[0]
-
-
-def median_value(queryset, term):
-    count = queryset.count()
-    values = queryset.values_list(term, flat=True).order_by(term)
-    if count % 2 == 1:
-        return values[int(round(count / 2))]
-    else:
-        return sum(values[count / 2 - 1:count / 2 + 1]) / 2.0
-
 
 def github_reqest(url, params=None):
     return requests.get(url=url, params=params,

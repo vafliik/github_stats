@@ -11,16 +11,19 @@
     <a href="{% url 'pr_stats:statistics' next.year next.month next.day %}">Next week</a></p>
 
 <h3>{{ query_filter.created_at__gte | date:'M d, Y'}} - {{ query_filter.created_at__lt | date:'M d, Y'}} </h3>
-<b>Closed {{ pulls.count|default_if_none:"0" }} PR's</b>
-<b>Open {{ open_pulls.count }} PR's</b>
+
+<p>
+<b>Closed <a href="#closed_pr" class="label label-success">{{ pulls.count|default_if_none:"0" }}</a></b>
+<b>Open <a href="#open_pr" class="label label-info">{{ open_pulls.count }}</a></b>
+</p>
 
 {% if pulls or open_pulls%}
-<table class="table">
+<table class="table table-bordered table-striped">
     <thead>
     <tr>
-        <th>Statistics</th>
-        <th>Value</th>
-        <th>PR</th>
+        <th  class="col-md-2">Statistics</th>
+        <th  class="col-md-1">Value</th>
+        <th  class="col-md-3">PR</th>
     </tr>
     </thead>
 
@@ -72,18 +75,18 @@
 
 
 {% if open_pulls %}
-
+<a name="open_pr"></a>
 <table class="table" id="open_pr_table">
     <caption>Open PRs</caption>
     <thead>
     <tr>
-        <th>#</th>
-        <th>Title</th>
-        <th>User</th>
-        <th>State</th>
-        <th>Created</th>
-        <th>Duration</th>
-        <th>Links</th>
+        <th class="col-md-1">#</th>
+        <th class="col-md-5">Title</th>
+        <th class="col-md-1">User</th>
+        <th class="col-md-1">State</th>
+        <th class="col-md-2">Created</th>
+        <th class="col-md-3">Duration</th>
+        <th class="col-md-1">Links</th>
     </tr>
     </thead>
 
@@ -104,21 +107,23 @@
     <p>No Open Pull Requests</p>
 
 </table>
+
 {% endif %}
 
 
 {% if pulls %}
+<a name="closed_pr"></a>
 <table class="table" id="pr_table">
     <caption>Closed PRs</caption>
     <thead>
         <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>User</th>
-            <th>State</th>
-            <th>Created</th>
-            <th>Duration</th>
-            <th>Links</th>
+            <th class="col-md-1">#</th>
+            <th class="col-md-5">Title</th>
+            <th class="col-md-1">User</th>
+            <th class="col-md-1">State</th>
+            <th class="col-md-2">Created</th>
+            <th class="col-md-3">Duration</th>
+            <th class="col-md-1">Links</th>
         </tr>
     </thead>
 
@@ -146,12 +151,12 @@ $(document).ready(function() {
     $('#pr_table').dataTable( {
         "paging": false,
         "searching": false,
-        "order": [[0, 'desc']]
+        "order": [[5, 'desc']]
     });
     $('#open_pr_table').dataTable( {
         "paging": false,
         "searching": false,
-        "order": [[0, 'desc']]
+        "order": [[5, 'desc']]
     });
 
 });
