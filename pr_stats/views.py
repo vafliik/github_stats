@@ -71,7 +71,7 @@ def statistics(request, year=None, month=None, day=None):
         context['average_time'] = timedelta(seconds=average_time)
         context['median_time'] = timedelta(seconds=median_time)
 
-    context['longest_open'] = open_pulls.order_by('-created_at')[:1][0] if open_pulls else None
+    context['longest_open'] = open_pulls.order_by('created_at')[:1][0] if open_pulls else None
     context['most_bugs'] = pr_with_most_bugs(closed_pulls)
 
     return render(request, 'pr_stats/statisticts.html', context)

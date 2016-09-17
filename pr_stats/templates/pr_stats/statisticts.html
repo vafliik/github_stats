@@ -55,7 +55,7 @@
     {% if longest_open %}
     <tr class="">
 
-        <td>Longest open</td>
+        <td>Open for longest time (not closed yet)</td>
         <td>{{ longest_open.time_open }}</td>
         <td><a href="{% url 'pr_stats:detail' longest_open.number %}">{{ longest_open.title }}</a></td>
     </tr>
