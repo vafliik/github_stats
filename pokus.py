@@ -1,15 +1,23 @@
-import json
-import os
-import requests
+#get all weeks:
+import datetime
 
-TOKEN = os.environ['GITHUB_TOKEN']
+import django
+from django.utils import timezone
 
-params = {'q': 'type:pr author:vafliik repo:salsita/circlesorg updated:2016-08-09..2016-08-15'}
 
-r = requests.get('https://api.github.com/search/issues', params=params,
-                 headers={'Authorization': 'token {}'.format(TOKEN)})
+weeks = set()
+d7 = datetime.timedelta( days = 7)
+iterDay = datetime.date(2012,1,1)
 
-data = json.loads(r.text)
+print (iterDay.isocalendar()[1])
 
-for pr in data['items']:
-    print(pr['title'], pr['updated_at'])
+# while iterDay <= today:
+#     weeks.add( iterDay.isocalendar()[1] )
+#     iterDay += d7
+
+
+
+#aggregate event by week
+result = dict()
+for w in weeks:
+    result.setdefault( w ,0)

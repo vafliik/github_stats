@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{% block title %}Report{% endblock %}</h1>
+
+There will be report
+
+<table class="table" id="weekly_table">
+    <thead>
+    <tr>
+        <th>Week number</th>
+        {% for week in weekly %}
+        <th>{{ week }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr class="danger">
+        <td>Slow</td>
+        {% for week, detail in weekly.items %}
+        <td>{{ detail.slow }}</td>
+        {% endfor %}
+    </tr>
+    <tr class="warning">
+        <td>Medium</td>
+        {% for week, detail in weekly.items %}
+        <td>{{ detail.medium }}</td>
+        {% endfor %}
+    </tr>
+    <tr class="success">
+        <td>Fast</td>
+        {% for week, detail in weekly.items %}
+        <td>{{ detail.fast }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td>Total</td>
+        {% for week, detail in weekly.items %}
+        <td>{{ detail.total }}</td>
+        {% endfor %}
+    </tr>
+
+    </tbody>
+
+
+</table>
+
+<p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
+{% endblock %}

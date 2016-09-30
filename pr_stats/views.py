@@ -5,6 +5,7 @@ import dateutil.parser
 from datetime import datetime, timezone, timedelta, date
 
 import django
+from django.db import connection
 from django.db.models import Min, F, Max, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -75,6 +76,35 @@ def statistics(request, year=None, month=None, day=None):
     context['most_bugs'] = pr_with_most_bugs(closed_pulls)
 
     return render(request, 'pr_stats/statisticts.html', context)
+
+
+def report(request):
+    allPR = PullRequest.objects.all().filter(state='closed')
+
+    weekly = {}
+    for pr in allPR:
+        week_nr = pr.created_at.isocalendar()[1]
+        if week_nr in weekly.keys():
+            weekly[week_nr]['total'] += 1
+            if pr.time_open() > timedelta(days=1):
+                week['slow'] += 1
+            elif pr.time_open() > timedelta(hours=5):
+                week['medium'] += 1
+            else:
+                week['fast'] += 1
+        else:
+            week = { 'total': 1, 'slow': 0, 'medium': 0, 'fast': 0}
+            if pr.time_open() > timedelta(days=1):
+                week['slow'] = 1
+            elif pr.time_open() > timedelta(hours=5):
+                week['medium'] = 1
+            else:
+                week['fast'] = 1
+
+            weekly[week_nr] = week
+
+    context = {'weekly': weekly}
+    return render(request, 'pr_stats/report.html', context)
 
 
 def pulls(request):

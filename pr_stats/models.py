@@ -66,7 +66,7 @@ class PullRequest(models.Model):
     def alert(self):
         if self.time_open() > timedelta(days=1):
             return 'danger'
-        if self.time_open() > timedelta(hours=5):
+        elif self.time_open() > timedelta(hours=5):
             return 'warning'
         else:
             return 'success'
