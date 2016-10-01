@@ -86,21 +86,11 @@ def report(request):
         week_nr = pr.created_at.isocalendar()[1]
         if week_nr in weekly.keys():
             weekly[week_nr]['total'] += 1
-            if pr.time_open() > timedelta(days=1):
-                week['slow'] += 1
-            elif pr.time_open() > timedelta(hours=5):
-                week['medium'] += 1
-            else:
-                week['fast'] += 1
+            # count PRs in week based on their alert level ( < 5 hours, < 1 day, > 1 day )
+            weekly[week_nr][pr.alert()] += 1
         else:
-            week = { 'total': 1, 'slow': 0, 'medium': 0, 'fast': 0}
-            if pr.time_open() > timedelta(days=1):
-                week['slow'] = 1
-            elif pr.time_open() > timedelta(hours=5):
-                week['medium'] = 1
-            else:
-                week['fast'] = 1
-
+            week = {'total': 1, 'danger': 0, 'warning': 0, 'success': 0}
+            week[pr.alert()] += 1
             weekly[week_nr] = week
 
     context = {'weekly': weekly}

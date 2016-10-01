@@ -19,19 +19,19 @@ There will be report
     <tr class="danger">
         <td>Slow</td>
         {% for week, detail in weekly.items %}
-        <td>{{ detail.slow }}</td>
+        <td>{{ detail.danger }}</td>
         {% endfor %}
     </tr>
     <tr class="warning">
         <td>Medium</td>
         {% for week, detail in weekly.items %}
-        <td>{{ detail.medium }}</td>
+        <td>{{ detail.warning }}</td>
         {% endfor %}
     </tr>
     <tr class="success">
         <td>Fast</td>
         {% for week, detail in weekly.items %}
-        <td>{{ detail.fast }}</td>
+        <td>{{ detail.success }}</td>
         {% endfor %}
     </tr>
     <tr>
