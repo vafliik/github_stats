@@ -10,7 +10,7 @@ There will be report
     <tr>
         <th>Week number</th>
         {% for week in weekly %}
-        <th>{{ week }}</th>
+        <th><a href="{% url 'pr_stats:statistics-week' week %}">{{ week }}</a></th>
         {% endfor %}
     </tr>
     </thead>

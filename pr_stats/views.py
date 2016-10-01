@@ -3,6 +3,7 @@ import logging
 import dateutil.parser
 
 from datetime import datetime, timezone, timedelta, date
+from isoweek import Week
 
 import django
 from django.db import connection
@@ -32,11 +33,15 @@ def detail(request, pr_number):
     return render(request, 'pr_stats/detail.html', context)
 
 
-def statistics(request, year=None, month=None, day=None):
+def statistics(request, year=None, month=None, day=None, week_nr=None):
     today = django.utils.timezone.now()
     this_monday = (today - timedelta(days=today.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    if year:
+    if week_nr:
+        monday = Week(2016, int(week_nr)).monday()
+        start = django.utils.timezone.now().replace(year=monday.year, month=monday.month, day=monday.day, hour=0, minute=0, second=0,
+                                                    microsecond=0)
+    elif year:
         year = int(year)
         month = int(month)
         day = int(day)
