@@ -45,6 +45,39 @@ There will be report
 
 
 </table>
-
 <p><a href="{% url 'pr_stats:index' %}">&lt;&lt; Back</a></p>
+
+<div id="columnchart_values" style="width: 90%;height: 300px;"></div>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Speed', 'Slow', 'Medium', 'Fast', { role: 'annotation' } ],
+        {% for week, detail in weekly.items %}
+        ['Week {{ week }}', {{ detail.danger }}, {{ detail.warning }}, {{ detail.success }}, ''],
+        {% endfor %}
+      ]);
+      var view = new google.visualization.DataView(data);
+      var options = {
+        width: 1200,
+        height: 600,
+        legend: { position: 'top', maxLines: 3 },
+        bar: { groupWidth: '75%' },
+        isStacked: true,
+          series: {
+            0:{color:'#FFBABA'},
+            1:{color:'#FEEFB3'},
+            2:{color:'#DFF2BF'},
+  }
+      };
+      var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+      chart.draw(view, options);
+  }
+
+</script>
+
 {% endblock %}
